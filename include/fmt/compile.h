@@ -139,6 +139,10 @@ constexpr const T& get_arg_checked(const Args&... args) {
 template <typename Char>
 struct is_compiled_format<code_unit<Char>> : std::true_type {};
 
+#if _MSC_VER && !defined(__clang__) && !defined(__INTEL_COMPILER)
+#pragma warning(push)
+#pragma warning(disable : 4702) // unreachable code, caused by fmt
+#endif
 // A replacement field that refers to argument N.
 template <typename Char, typename T, int N> struct field {
   using char_type = Char;
@@ -153,6 +157,9 @@ template <typename Char, typename T, int N> struct field {
     return write<Char>(out, arg);
   }
 };
+#if _MSC_VER && !defined(__clang__) && !defined(__INTEL_COMPILER)
+#pragma warning(pop)
+#endif // warning 4702 is back
 
 template <typename Char, typename T, int N>
 struct is_compiled_format<field<Char, T, N>> : std::true_type {};
